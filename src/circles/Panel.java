@@ -3,10 +3,16 @@ package circles;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -49,6 +55,7 @@ public class Panel extends JPanel implements ActionListener {
                 if (tries >= 1000) {
                     empty_space = false;
                     System.out.println("Finished");
+                    Finished();
                     break;
                 }
                 // Getting pixel color by position x and y 
@@ -63,6 +70,38 @@ public class Panel extends JPanel implements ActionListener {
             c.update(g);
         }
 
+    }
+
+    private void Finished() {
+        final JFileChooser fc = new JFileChooser();
+
+        //From: http://stackoverflow.com/questions/12558413/how-to-filter-file-type-in-filedialog
+        fc.addChoosableFileFilter(new OpenFileFilter("jpeg", "Photo in JPEG format"));
+        fc.addChoosableFileFilter(new OpenFileFilter("jpg", "Photo in JPEG format"));
+        fc.addChoosableFileFilter(new OpenFileFilter("png", "PNG image"));
+
+        int returnVal = fc.showDialog(fc, "Save");
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            BufferedImage saveImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2 = saveImage.createGraphics();
+            for (Circle c : circles) {
+                c.update(g2);
+            }
+
+            try {
+                ImageIO.write(saveImage, getFileType(file.getName()), file);
+                System.out.println("File save: " + file.getName() + " " + getFileType(file.getName()));
+            } catch (IOException e) {
+            }
+        }
+    }
+
+    private String getFileType(String path) {
+        String fileType = null;
+        fileType = path.substring(path.indexOf('.', path.lastIndexOf('/')) + 1).toUpperCase();
+        return fileType;
     }
 
     private boolean GoodPoint(int x, int y) {
