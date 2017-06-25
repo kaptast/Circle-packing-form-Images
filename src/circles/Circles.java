@@ -13,7 +13,6 @@ import javax.swing.event.ChangeListener;
 public class Circles {
 
     public static void main(String[] args) throws IOException {
-
         final JFileChooser fc = new JFileChooser();
 
         //From: http://stackoverflow.com/questions/12558413/how-to-filter-file-type-in-filedialog
